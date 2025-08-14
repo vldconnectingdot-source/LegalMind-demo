@@ -1,0 +1,91 @@
+name: Deploy to GitHub Pages (auto)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Solo instala Node si hay package.json (proyectos estáticos sin build lo omiten)
+      - name: Detect package.json
+        id: detect_node
+        run: |
+          if [ -f package.json ]; then
+            echo "has_node=true" >> $GITHUB_OUTPUT
+          else
+            echo "has_node=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Set up Node.js
+        if: steps.detect_node.outputs.has_node == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      - name: Install deps
+        if: steps.detect_node.outputs.has_node == 'true'
+        run: npm ci --no-audit --no-fund
+
+      - name: Build (best-effort)
+        if: steps.detect_node.outputs.has_node == 'true'
+        run: |
+          # Intentar npm run build si existe, si no, no falla
+          if npm run | grep -q " build"; then
+            npm run build || true
+          fi
+
+      - name: Detect publish dir
+        id: detect_dir
+        shell: bash
+        run: |
+          set -e
+          if [ -d dist ]; then
+            PUB=dist
+          elif [ -d build ]; then
+            PUB=build
+          else
+            PUB=.
+          fi
+          echo "PUBLISH_DIR=$PUB" >> $GITHUB_ENV
+          echo "publish_dir=$PUB" >> $GITHUB_OUTPUT
+          echo "Using $PUB as publish dir"
+
+      - name: SPA routing fix (copy index->404)
+        run: |
+          if [ -f "$PUBLISH_DIR/index.html" ]; then
+            cp "$PUBLISH_DIR/index.html" "$PUBLISH_DIR/404.html" || true
+          fi
+
+      # Opcional: si tienes dominio propio, descomenta y ajusta:
+      # - name: Add CNAME
+      #   run: |
+      #     echo "legalmind.ai" > "$PUBLISH_DIR/CNAME"
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ${{ steps.detect_dir.outputs.publish_dir }}
+
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
