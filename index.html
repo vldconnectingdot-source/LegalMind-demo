@@ -1,4 +1,33 @@
-<!DOCTYPE html>
+<!-- Banner de acceso temporal -->
+<div style="background-color:#004aad;color:white;padding:15px;text-align:center;font-size:18px;font-weight:bold;">
+  🚀 Acceso de prueba activo por 3 días · Después podrás enviarnos tus comentarios
+</div>
+
+<!-- Script para control de expiración -->
+<script>
+(function(){
+  const startDate = localStorage.getItem("trialStartDate") || new Date().toISOString();
+  localStorage.setItem("trialStartDate", startDate);
+
+  const trialDays = 3;
+  const expirationDate = new Date(startDate);
+  expirationDate.setDate(expirationDate.getDate() + trialDays);
+
+  const now = new Date();
+  if(now > expirationDate){
+    document.body.innerHTML = "<h1 style='text-align:center;margin-top:50px;color:red;'>El periodo de prueba ha finalizado. ¡Gracias por probar LegalMind AI!</h1>";
+  }
+})();
+</script>
+
+<!-- Formulario de comentarios -->
+<div style="max-width:500px;margin:30px auto;padding:20px;border:1px solid #ccc;border-radius:8px;">
+  <h3 style="text-align:center;">Envíanos tus comentarios</h3>
+  <form action="mailto:vldconnectingdot@gmail.com" method="POST" enctype="text/plain">
+    <textarea name="Comentarios" rows="5" style="width:100%;padding:10px;border-radius:5px;border:1px solid #aaa;" placeholder="Escribe aquí tus comentarios..."></textarea><br><br>
+    <input type="submit" value="Enviar" style="width:100%;background-color:#004aad;color:white;padding:10px;border:none;border-radius:5px;font-size:16px;cursor:pointer;">
+  </form>
+</div>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
