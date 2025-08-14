@@ -1,5 +1,43 @@
 <!-- Banner de acceso temporal -->
 <div style="background-color:#004aad;color:white;padding:10px;text-align:center;font-size:16px;">
+🚀 Acceso de prueba activo por 3 días · Después de este periodo, se solicitarán comentarios para continuar.
+</div>
+
+<!-- Script para control de expiración y formulario de comentarios -->
+<script>
+(function(){
+    const trialDays = 3;
+    let startDate = localStorage.getItem("trialStartDate");
+    if (!startDate) {
+        startDate = new Date().toISOString();
+        localStorage.setItem("trialStartDate", startDate);
+    }
+    const expirationDate = new Date(startDate);
+    expirationDate.setDate(expirationDate.getDate() + trialDays);
+
+    if (new Date() > expirationDate) {
+        document.body.innerHTML = `
+            <h2 style="text-align:center;">⏳ Periodo de prueba finalizado</h2>
+            <p style="text-align:center;">Por favor, deja tus comentarios para continuar:</p>
+            <textarea id="feedback" style="width:80%;margin:10px auto;display:block;height:100px;"></textarea>
+            <button onclick="enviarComentario()" style="display:block;margin:0 auto;padding:10px 20px;background:#004aad;color:white;border:none;border-radius:5px;cursor:pointer;">
+                Enviar comentarios
+            </button>
+        `;
+    }
+})();
+
+function enviarComentario(){
+    const comentario = document.getElementById("feedback").value;
+    if(comentario.trim()){
+        alert("✅ ¡Gracias por tus comentarios! Nos pondremos en contacto contigo.");
+        // Aquí puedes añadir integración para enviar el comentario a tu correo o base de datos
+    } else {
+        alert("⚠️ Por favor, escribe un comentario antes de enviar.");
+    }
+}
+</script>
+<div style="background-color:#004aad;color:white;padding:10px;text-align:center;font-size:16px;">
 🚀 Acceso de prueba activo por 3 días · Después de este tiempo, deje sus comentarios abajo
 </div>
 
