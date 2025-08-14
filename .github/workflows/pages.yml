@@ -70,22 +70,3 @@ jobs:
           echo "publish_dir=$PUB" >> $GITHUB_OUTPUT
           echo "Using $PUB as publish dir"
 
-      - name: SPA routing fix (copy index->404)
-        run: |
-          if [ -f "$PUBLISH_DIR/index.html" ]; then
-            cp "$PUBLISH_DIR/index.html" "$PUBLISH_DIR/404.html" || true
-          fi
-
-      # Opcional: si tienes dominio propio, descomenta y ajusta:
-      # - name: Add CNAME
-      #   run: |
-      #     echo "legalmind.ai" > "$PUBLISH_DIR/CNAME"
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: ${{ steps.detect_dir.outputs.publish_dir }}
-
-      - name: Deploy to GitHub Pages
-        id: deploy
-        uses: actions/deploy-pages@v4
