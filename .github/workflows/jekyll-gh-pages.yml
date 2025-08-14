@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LegalMind AI — Demo Funcional Segura</title>
+  <!-- CSP permisiva para funcionar en htmlpreview/github pages (sin dependencias externas) -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; img-src 'self' data: blob:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self' data:; connect-src 'self' data: blob:; frame-ancestors 'self'; base-uri 'self'; object-src 'none'">
+  <style>
+    :root { --bg:#0B0F19; --fg:#ffffff; --muted:#9AA3B2; --card: rgba(255,255,255,.04); --border: rgba(255,255,255,.12);
+            --brand-blue:#0077FF; --brand-gold:#FFD700; --brand-blue-2:#00E5FF; }
+    * { box-sizing:border-box; -webkit-user-select:none; user-select:none; -webkit-touch-callout:none; }
+    html, body { height:100%; }
+    body { margin:0; background:var(--bg); color:var(--fg); font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif; }
+
+    .brandbar { position:sticky; top:0; z-index:10; background:linear-gradient(90deg,var(--brand-blue),var(--brand-blue-2));
+                padding:10px 16px; border-bottom:2px solid var(--brand-gold); }
+    .brandbar .inner { max-width:1100px; margin:0 auto; display:flex; align-items:center; gap:14px; }
+    .tag { margin-left:auto; font:700 12px/1 Segoe UI, Roboto, Arial; color:#000; background:var(--brand-gold); padding:8px 10px; border-radius:8px; }
+
+    .wrap { max-width:1100px; margin:0 auto; padding:24px; }
+    .top { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+    h1 { margin:0; font-size:22px; }
+    .muted { color:var(--muted); font-size:12px; }
+
+    .grid { margin-top:16px; display:grid; grid-template-columns:repeat(3,1fr); gap:12px; }
+    .item { background:var(--card); border:1px solid var(--border); border-radius:14px; padding:14px; min-height:96px; display:flex; flex-direction:column; justify-content:space-between; }
+    .item h3 { margin:0 0 6px; font-size:16px; color:var(--brand-blue-2); }
+    .item p { margin:0; color:var(--muted); font-size:12px; }
+
+    .btn { display:inline-block; padding:10px 14px; border-radius:10px; background:linear-gradient(180deg,#fff,#e6e6e6); color:#000; border:0; font-weight:700; cursor:pointer; }
+    .btn.ghost { background:transparent; color:var(--fg); border:1px solid var(--border); }
+    .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+
+    .wm { position:fixed; inset:0; pointer-events:none; display:grid; place-items:center; color:#0077FF; opacity:.06; font-weight:900; font-size:6vw; letter-spacing:.08em; transform:rotate(-18deg); }
+    .badge { position:fixed; right:12px; bottom:12px; background:#111; color:#fff; padding:8px 12px; border-radius:8px; font:600 12px/1.2 system-ui,-apple-system,Segoe UI,Roboto,Arial; opacity:.9; }
+
+    .modal { position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.6); }
+    .box { width:min(720px,92vw); background:#0E1422; border:1px solid var(--border); border-radius:14px; padding:18px; position:relative; }
+    .box h2 { margin:0 0 8px; font-size:18px; }
+    .box p { margin:0 0 8px; color:var(--muted); }
+    .x { position:absolute; right:16px; top:12px; font-weight:700; cursor:pointer; }
+    .toast { position:fixed; left:50%; transform:translateX(-50%); bottom:18px; background:#111; color:#fff; padding:10px 14px; border-radius:10px; display:none; }
+
+    ::-webkit-scrollbar { width:10px; height:10px; }
+    ::-webkit-scrollbar-thumb { background:rgba(255,255,255,.12); border-radius:8px; }
+  </style>
+  <script>
+    // Bloqueos disuasivos
+    addEventListener('contextmenu', e=> e.preventDefault());
+    addEventListener('dragstart',  e=> e.preventDefault());
+    ['copy','cut','paste'].forEach(evt => addEventListener(evt, e=> e.preventDefault()));
+    addEventListener('keydown', e => {
+      const k=e.key.toLowerCase(), ctrl=e.ctrlKey||e.metaKey;
+      if ((ctrl && ['c','x','s','u','p','a'].includes(k)) || (e.shiftKey && (k==='i'||k==='p'))) { e.preventDefault(); e.stopPropagation(); }
+    });
+
+    // Caducidad hasta el próximo lunes 23:59 (hora local del navegador)
+    const DEADLINE_KEY='lma_deadline_ts';
+    function nextMondayDeadline(){
+      const now=new Date();
+      const day=now.getDay(); // 0=Dom, 1=Lun
+      let addDays=(1 - day + 7) % 7;
+      if(addDays===0) addDays=7; // si hoy es lunes, que sea el siguiente
+      const d=new Date(now.getFullYear(), now.getMonth(), now.getDate()+addDays, 23,59,0,0);
+      return d.getTime();
+    }
+    function deadlineTs(){
+      const saved=Number(localStorage.getItem(DEADLINE_KEY)||0);
+      if(saved) return saved;
+      const ts=nextMondayDeadline();
+      localStorage.setItem(DEADLINE_KEY, String(ts));
+      return ts;
+    }
+    function expired(){ return Date.now() > deadlineTs(); }
+    function deadlineText(){ return new Date(deadlineTs()).toLocaleString(); }
+
+    // NDA
+    function openNDA(){ document.getElementById('nda').style.display='flex'; }
+    function acceptNDA(){
+      if(expired()){
+        document.body.innerHTML='<div class="wrap"><h1>Enlace caducado</h1><p class="muted">Solicita uno nuevo.</p></div>';
+        return;
+      }
+      document.getElementById('nda').style.display='none';
+      document.getElementById('expiry').textContent = deadlineText();
+      toast('Acceso concedido. Vigente hasta el lunes.');
+    }
+
+    // Módulos (simulados)
+    function openModule(id){
+      if(expired()){
+        document.body.innerHTML='<div class="wrap"><h1>Enlace caducado</h1><p class="muted">Solicita uno nuevo.</p></div>';
+        return;
+      }
+      const info={
+        m1:['Búsqueda jurisprudencial','Consulta tesis y jurisprudencias con filtros inteligentes y resúmenes automáticos.'],
+        m2:['Generador de contratos','Plantillas dinámicas con clausulado recomendado y sellado de tiempo.'],
+        m3:['Análisis de riesgos','Detección de cláusulas críticas y alertas de incumplimiento.'],
+        m4:['Compliance y datos','Checklist, reportes y evidencias automatizadas (LPDP/RGPD).'],
+        m5:['Gestión de casos','Expedientes, tareas, SLA y tablero Kanban.'],
+        m6:['Clientes y cobros','Panel de clientes, minutas y enlaces de pago.'],
+        m7:['Chat legal (IA)','Asistente con contexto de tus documentos y fuentes verificadas.'],
+        m8:['Firma digital','Flujos de firma, sello y verificación.'],
+        m9:['Panel ejecutivo','KPIs, ahorro estimado y tiempos de respuesta.'],
+      };
+      document.getElementById('modTitle').textContent=(info[id]||['Módulo',''])[0];
+      document.getElementById('modBody').textContent=(info[id]||['','Contenido de ejemplo'])[1];
+      document.getElementById('mod').style.display='flex';
+    }
+    function closeMod(){ document.getElementById('mod').style.display='none'; }
+
+    function toast(t){ const el=document.getElementById('toast'); el.textContent=t; el.style.display='block'; setTimeout(()=> el.style.display='none', 2200); }
+
+    addEventListener('DOMContentLoaded', ()=>{
+      document.getElementById('expiry').textContent='al aceptar NDA';
+      openNDA();
+    });
+  </script>
+</head>
+<body>
+  <!-- Barra de marca con logo inline (azul + oro) -->
+  <div class="brandbar">
+    <div class="inner">
+      <svg xmlns="http://www.w3.org/2000/svg" width="140" height="42" viewBox="0 0 140 42" aria-label="LegalMind AI">
+        <defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0077FF"/><stop offset="1" stop-color="#00E5FF"/></linearGradient></defs>
+        <g transform="translate(0,0)">
+          <circle cx="21" cy="21" r="20" fill="url(#g1)"></circle>
+          <circle cx="21" cy="21" r="14" fill="none" stroke="#FFD700" stroke-width="3"></circle>
+          <path d="M21 9 L28 21 L21 33 L14 21 Z" fill="#0B0F19" opacity="0.95"></path>
+        </g>
+      </svg>
+      <div style="font-weight:800;color:#fff;">LEGALMIND AI</div>
+      <div class="tag">Demo protegida</div>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <h1>LegalMind AI — Demo</h1>
+        <div class="muted">Enlace con seguridad disuasiva • Caduca: <span id="expiry">al aceptar NDA</span></div>
+      </div>
+      <div class="row">
+        <button class="btn" onclick="openNDA()">Ver/aceptar NDA</button>
+        <button class="btn ghost" onclick="location.reload()">Reiniciar</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="item"><h3>1) Búsqueda jurisprudencial</h3><p>Filtros inteligentes y resúmenes automáticos.</p><div class="row"><button class="btn" onclick="openModule('m1')">Abrir</button></div></div>
+      <div class="item"><h3>2) Generador de contratos</h3><p>Clausulado recomendado y sellado de tiempo.</p><div class="row"><button class="btn" onclick="openModule('m2')">Abrir</button></div></div>
+      <div class="item"><h3>3) Análisis de riesgos</h3><p>Alertas de incumplimiento y scoring.</p><div class="row"><button class="btn" onclick="openModule('m3')">Abrir</button></div></div>
+      <div class="item"><h3>4) Compliance y datos</h3><p>LPDP/RGPD con evidencias.</p><div class="row"><button class="btn" onclick="openModule('m4')">Abrir</button></div></div>
+      <div class="item"><h3>5) Gestión de casos</h3><p>Expedientes, tareas y SLA.</p><div class="row"><button class="btn" onclick="openModule('m5')">Abrir</button></div></div>
+      <div class="item"><h3>6) Clientes y cobros</h3><p>Minutas y enlaces de pago.</p><div class="row"><button class="btn" onclick="openModule('m6')">Abrir</button></div></div>
+      <div class="item"><h3>7) Chat legal (IA)</h3><p>Asistente con fuentes.</p><div class="row"><button class="btn" onclick="openModule('m7')">Abrir</button></div></div>
+      <div class="item"><h3>8) Firma digital</h3><p>Flujos y verificación.</p><div class="row"><button class="btn" onclick="openModule('m8')">Abrir</button></div></div>
+      <div class="item"><h3>9) Panel ejecutivo</h3><p>KPI y ahorro.</p><div class="row"><button class="btn" onclick="openModule('m9')">Abrir</button></div></div>
+    </div>
+  </div>
+
+  <!-- Modales -->
+  <div class="modal" id="nda">
+    <div class="box">
+      <div class="x" onclick="document.getElementById('nda').style.display='none'">✕</div>
+      <h2>Acuerdo de Confidencialidad (NDA) — Demo</h2>
+      <p>Acceso solo para evaluación. Prohibida la copia, redistribución o ingeniería inversa de contenidos y flujos mostrados.</p>
+      <p>Al aceptar, se configura la caducidad del acceso hasta el lunes 23:59 (hora local).</p>
+      <div class="row">
+        <button class="btn" onclick="acceptNDA()">Acepto y entrar</button>
+        <button class="btn ghost" onclick="document.getElementById('nda').style.display='none'">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal" id="mod">
+    <div class="box">
+      <div class="x" onclick="closeMod()">✕</div>
+      <h2 id="modTitle">Módulo</h2>
+      <p id="modBody" class="muted">Contenido</p>
+      <div class="row"><button class="btn ghost" onclick="closeMod()">Cerrar</button></div>
+    </div>
+  </div>
+
+  <div class="wm">LEGALMIND AI — DEMO</div>
+  <div class="badge">Vista segura • Copiado deshabilitado</div>
+  <div id="toast" class="toast"></div>
+</body>
+</html>
