@@ -1,2 +1,109 @@
 <!DOCTYPE html>
 <html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LegalMind AI — Demo Segura (GitHub Pages)</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; base-uri 'none'; object-src 'none'; frame-ancestors 'none'">
+<style>
+  :root {
+    --bg: #0B0F19; --fg: #fff; --muted:#9AA3B2; --primary:#0A39FF; --accent:#D4AF37; --danger:#FF4D4F;
+  }
+  html, body { margin:0; background:var(--bg); color:var(--fg); font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial; user-select:none; }
+  .wrap { max-width:980px; margin:0 auto; padding:24px; }
+  .card { background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:16px; padding:24px; }
+  .grid { display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; }
+  .item { background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); border-radius:12px; padding:12px; min-height:72px; }
+  .row { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+  .btn { padding:10px 14px; border-radius:10px; background:linear-gradient(90deg,var(--primary),var(--accent)); color:#000; border:none; font-weight:700; cursor:pointer; }
+  .btn.ghost { background:transparent; color:#fff; border:1px solid rgba(255,255,255,0.2); }
+  .muted { color:var(--muted); font-size:12px; }
+  .notice { border-left:4px solid var(--danger); padding:12px; background:rgba(255,77,79,0.06); border-radius:8px; }
+  .watermark { position:fixed; inset:0; pointer-events:none; background-image:repeating-linear-gradient(45deg, rgba(212,175,55,0.08) 0, rgba(212,175,55,0.08) 2px, transparent 2px, transparent 24px); mix-blend-mode: overlay; }
+  input[type="password"] { width:100%; padding:10px; border-radius:8px; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.04); color:#fff; }
+  .modal { position: fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,0.6); }
+  .modal .box { width:min(680px,92vw); background:#0E1422; border:1px solid rgba(255,255,255,0.12); border-radius:14px; padding:18px; }
+</style>
+<script>
+  const EXPIRES_AT="2025-09-14T23:59:59-06:00";
+  const TOKEN="01K2MET1A9KG860CAN9YHF41P4";
+  const PASS="0000";
+  const now=()=>new Date();
+  function isExpired() { return now() > new Date(EXPIRES_AT); }
+  function hasValidToken() { const t=new URL(location.href).searchParams.get('t'); return t===TOKEN; }
+  function guard() {
+    if (isExpired()) { document.body.innerHTML='<div class="wrap"><div class="card"><h1>Acceso vencido</h1><p class="muted">Solicita un nuevo enlace al equipo LegalMind AI.</p></div></div>'; return false; }
+    if (!hasValidToken()) { document.body.innerHTML='<div class="wrap"><div class="card"><h1>Acceso restringido</h1><p class="muted">Token inválido o ausente.</p></div></div>'; return false; }
+    document.getElementById('ndaModal').style.display='flex'; return true;
+  }
+  // Anti-copia/inspección (disuasorio)
+  addEventListener('contextmenu', e=>e.preventDefault());
+  addEventListener('keydown', e=>{
+    const k=e.key.toLowerCase(), ctrl=e.ctrlKey||e.metaKey;
+    if ((ctrl&&(k==='c'||k==='x'||k==='v'||k==='a'||k==='s'||k==='u'||k==='i'||k==='j')) || e.keyCode===123) { e.preventDefault(); e.stopPropagation(); }
+  }, true);
+  addEventListener('dragstart', e=>e.preventDefault());
+  addEventListener('copy', e=>e.preventDefault());
+  addEventListener('cut', e=>e.preventDefault());
+  addEventListener('selectstart', e=>e.preventDefault());
+  (function devtoolsTrap(){
+    const thr=160; setInterval(()=>{
+      if ((outerWidth-innerWidth>thr)||(outerHeight-innerHeight>thr)) document.body.innerHTML='<div class="wrap"><div class="card"><h1>Modo restringido</h1><p class="muted">Cierra herramientas de desarrollador para continuar.</p></div></div>';
+    }, 1500);
+  })();
+  function checkPass(){ const ok=(document.getElementById('pass').value.trim()===PASS); const cb=document.getElementById('ndaok').checked; document.getElementById('enter').disabled=!(ok&&cb); }
+  function enterDemo(){ document.getElementById('ndaModal').style.display='none'; document.getElementById('app').style.display='block'; }
+</script>
+</head>
+<body onload="guard()">
+<div class="watermark" aria-hidden="true"></div>
+
+<div id="ndaModal" class="modal" role="dialog" aria-modal="true">
+  <div class="box">
+    <h2 style="margin:0 0 8px;">Acuerdo de Confidencialidad (NDA) — Acceso a Demo</h2>
+    <p class="muted" style="margin:0 0 12px;">Al acceder aceptas no copiar, descargar ni divulgar; uso exclusivo para evaluación interna. Propiedad de D’ConnectingDot / LegalMind AI.</p>
+    <label>Contraseña de acceso</label>
+    <input id="pass" type="password" placeholder="••••" oninput="checkPass()" autocomplete="off" />
+    <label><input id="ndaok" type="checkbox" onchange="checkPass()" /> Acepto el NDA y las restricciones.</label>
+    <div class="row" style="margin-top:12px;">
+      <button id="enter" class="btn" onclick="enterDemo()" disabled>Entrar a la demo</button>
+      <button class="btn ghost" onclick="location.reload()">Cancelar</button>
+    </div>
+    <p class="muted" style="margin-top:8px;">Este acceso caduca el 2025-09-14 23:59:59 (CDMX) y requiere token en la URL.</p>
+  </div>
+</div>
+
+<div id="app" class="wrap" style="display:none;">
+  <div class="card">
+    <h1>LegalMind AI — Vista protegida</h1>
+    <h2>Módulos ampliados — solo visualización</h2>
+    <div class="grid" id="mods"></div>
+    <div class="row" style="margin-top:12px;">
+      <button class="btn" onclick="alert('Flujo demo: funciones críticas deshabilitadas.')">Probar flujo guiado</button>
+      <span class="muted">Válido hasta 2025-09-14 23:59:59 · Token + NDA + Contraseña</span>
+    </div>
+    <div style="margin-top:16px;" class="notice">
+      <b>Aviso:</b> Queda prohibida toda reproducción, captura o explotación. Se registran accesos para auditoría.
+    </div>
+  </div>
+</div>
+
+<script>
+  const mods=[
+    "Asistente Legal Conversacional",
+    "Generación de Contratos y Cláusulas",
+    "Revisión de Riesgos y Cumplimiento (KYC/AML/PLD)",
+    "Buscador Jurídico con Fuentes Oficiales",
+    "Gestión de Expedientes y Evidencia",
+    "Cálculo de Finiquitos y Nómina",
+    "Alertas Regulatorias y Jurisprudencia",
+    "Firma y Sellado de Tiempo",
+    "Analytics de Desempeño y Ahorro",
+    "Orquestación de Tareas y Workflows (nuevo)",
+    "Dashboard de Clientes & Embudos (nuevo)"
+  ];
+  const grid=document.getElementById('mods');
+  mods.forEach(m=>{ const el=document.createElement('div'); el.className='item'; el.textContent="• "+m; grid.appendChild(el); });
+</script>
+</body>
+</html>
