@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>LegalMind AI — Demo</title>
+<style>
+  :root{
+    --azul:#0b5fff; /* azul eléctrico */
+    --oro:#d4af37;  /* dorado */
+    --blanco:#ffffff;
+  }
+  html,body{margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Inter,Arial,sans-serif;background:#0b1220;color:#e5e7eb}
+  header{padding:28px 20px;text-align:center;border-bottom:1px solid #1f2937;background:linear-gradient(180deg,rgba(11,95,255,.25),transparent)}
+  .logo{font-weight:800;letter-spacing:.3px;font-size:28px;color:var(--blanco)}
+  .logo b{color:var(--azul)}
+  .tag{margin-top:6px;color:#cbd5e1}
+  .cta{margin:18px auto 0;display:inline-block;padding:10px 16px;border-radius:10px;background:var(--azul);color:#fff;text-decoration:none}
+  main{max-width:1000px;margin:0 auto;padding:24px 16px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+  .card{background:#0f172a;border:1px solid #1f2937;border-radius:14px;padding:16px}
+  .card h3{margin:0 0 6px 0;color:#fff;font-size:16px}
+  .card p{margin:0 0 10px 0;color:#94a3b8;font-size:14px}
+  .card button{width:100%;padding:10px;border:0;border-radius:10px;background:var(--oro);color:#111;font-weight:600}
+  footer{padding:32px 16px;text-align:center;color:#94a3b8;border-top:1px solid #1f2937;margin-top:24px}
+  .note{margin-top:8px;font-size:12px;color:#9ca3af}
+</style>
+</head>
+<body>
+  <header>
+    <div class="logo">LegalMind <b>AI</b></div>
+    <div class="tag">Demo interactiva — eficiencia, ahorro y cumplimiento jurídico</div>
+    <a class="cta" href="#modulos">Probar módulos</a>
+  </header>
+
+  <main>
+    <h2 id="modulos" style="color:#fff;margin:10px 0 14px">Módulos de la demo</h2>
+    <div class="grid">
+      <div class="card"><h3>1. Búsqueda Jurídica</h3><p>Consultas ágiles con IA y citación.</p><button onclick="alert('Demo: búsqueda ejecutada')">Probar</button></div>
+      <div class="card"><h3>2. Contratos Inteligentes</h3><p>Plantillas con cláusulas dinámicas.</p><button onclick="alert('Demo: contrato generado')">Probar</button></div>
+      <div class="card"><h3>3. Cumplimiento & KYC</h3><p>Checklist automático de riesgos.</p><button onclick="alert('Demo: checklist listo')">Probar</button></div>
+      <div class="card"><h3>4. Litigio & Expedientes</h3><p>Organiza, etiqueta y resume.</p><button onclick="alert('Demo: expediente cargado')">Probar</button></div>
+      <div class="card"><h3>5. Gestación Subrogada</h3><p>Flujo legal y documentos.</p><button onclick="alert('Demo: flujo mostrado')">Probar</button></div>
+      <div class="card"><h3>6. Laboral</h3><p>Finiquitos y FAQs automatizadas.</p><button onclick="alert('Demo: cálculo laboral')">Probar</button></div>
+      <div class="card"><h3>7. Inmobiliario</h3><p>Revisión y riesgos de contratos.</p><button onclick="alert('Demo: análisis inmobiliario')">Probar</button></div>
+      <div class="card"><h3>8. Cumplimiento Bancario</h3><p>Alertas y políticas.</p><button onclick="alert('Demo: política generada')">Probar</button></div>
+      <div class="card"><h3>9. Gobierno & Licitaciones</h3><p>Bases, scoring y entregables.</p><button onclick="alert('Demo: paquete listo')">Probar</button></div>
+    </div>
+
+    <p class="note">Esta es una demo estática. Las acciones muestran el flujo y UI; la conexión a backends se integra en la versión completa.</p>
+  </main>
+
+  <footer>© 2025 LegalMind AI by D’ConnectingDot</footer>
+</body>
+</html>
