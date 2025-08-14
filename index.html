@@ -1,4 +1,26 @@
 <!-- Banner de acceso temporal -->
+<div style="background-color:#004aad;color:white;padding:10px;text-align:center;font-size:16px;">
+🚀 Acceso de prueba activo por 3 días · Después de este tiempo, deje sus comentarios abajo
+</div>
+
+<!-- Script para control de expiración -->
+<script>
+(function(){
+    const trialDays = 3;
+    let startDate = localStorage.getItem("trialStartDate");
+    if (!startDate) {
+        startDate = new Date().toISOString();
+        localStorage.setItem("trialStartDate", startDate);
+    }
+    const expirationDate = new Date(startDate);
+    expirationDate.setDate(expirationDate.getDate() + trialDays);
+
+    if (new Date() > expirationDate) {
+        document.body.innerHTML = "<h2>⏳ El periodo de prueba ha terminado</h2><p>Por favor deje sus comentarios abajo:</p>" +
+                                  "<textarea style='width:90%;height:100px;'></textarea><br><button onclick='alert(\"Gracias por sus comentarios\")'>Enviar</button>";
+    }
+})();
+</script>
 <div style="background-color:#004aad;color:white;padding:15px;text-align:center;font-size:18px;font-weight:bold;">
   🚀 Acceso de prueba activo por 3 días · Después podrás enviarnos tus comentarios
 </div>
