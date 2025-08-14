@@ -1,4 +1,42 @@
-<!-- Banner de acceso temporal -->
+<!-- ====== BLOQUE FINAL: Planes + Comentarios (pegar antes de </body>) ====== -->
+<style>
+  .lm-section {max-width:1100px;margin:28px auto;padding:0 20px;}
+  .lm-title {font-size:22px;margin:0 0 12px;}
+  .lm-grid {display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));}
+  .lm-card {background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:16px;}
+  .lm-card h3 {margin:0 0 6px;font-size:16px;color:#00E5FF;}
+  .lm-card p {margin:0 0 10px;color:#9AA3B2;font-size:13px;}
+  .lm-btn {display:inline-block;padding:10px 14px;border-radius:10px;background:linear-gradient(180deg,#fff,#e6e6e6);color:#000;text-decoration:none;font-weight:700;}
+  /* Botón fijo de comentarios */
+  #lm-feedback-btn{position:fixed;right:14px;bottom:14px;z-index:9999;background:#004aad;color:#fff;
+    border:0;border-radius:10px;padding:12px 16px;font-weight:700}
+  #lm-feedback-btn:active{transform:scale(.98)}
+</style>
+
+<section class="lm-section" id="planes">
+  <h2 class="lm-title">Planes</h2>
+  <div class="lm-grid">
+    <div class="lm-card">
+      <h3>Plan Individual</h3>
+      <p>Acceso personal con funciones clave. Ideal para profesionales independientes.</p>
+      <a class="lm-btn" href="mailto:vledesma@dconnectingdot.com?subject=Inter\u00E9s%20Plan%20Individual%20-%20LegalMind%20AI&body=Hola%2C%20quiero%20informaci\u00F3n%20del%20Plan%20Individual." target="_blank">Contratar</a>
+    </div>
+    <div class="lm-card">
+      <h3>Plan Enterprise</h3>
+      <p>M\u00FAltiples usuarios, soporte dedicado y personalizaci\u00F3n para empresas y despachos.</p>
+      <a class="lm-btn" href="mailto:vledesma@dconnectingdot.com?subject=Inter\u00E9s%20Plan%20Enterprise%20-%20LegalMind%20AI&body=Hola%2C%20quiero%20agendar%20una%20demo%20Enterprise." target="_blank">Contactar</a>
+    </div>
+  </div>
+</section>
+
+<button id="lm-feedback-btn" type="button" onclick="(function(){
+  const msg = prompt('Deja tus comentarios (se enviar\u00E1n a Vanessa):','');
+  if(!msg||!msg.trim()) return;
+  const subj = encodeURIComponent('Comentarios Demo LegalMind AI');
+  const body = encodeURIComponent(msg.trim());
+  location.href = 'mailto:vledesma@dconnectingdot.com?subject='+subj+'&body='+body;
+})();">Enviar comentarios</button>
+<!-- ====== /FIN BLOQUE ====== --><!-- Banner de acceso temporal -->
 <div style="background-color:#004aad;color:white;padding:10px;text-align:center;font-size:16px;">
 🚀 Acceso de prueba activo por 3 días · Después de este periodo, se solicitarán comentarios para continuar.
 </div>
