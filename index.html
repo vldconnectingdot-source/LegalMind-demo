@@ -11,6 +11,104 @@
     return t === TOKEN;
   }
 
+  function getFirstOpen() {
+    try { return localStorage.getItem('lma_first_open'); } catch { return null; }
+  }
+  function setFirstOpen() {
+    try { localStorage.setItem('lma_first_open', new Date().toISOString()); } catch {}
+  }
+  function isExpired() {
+    const first = getFirstOpen();
+    if (!first) return false;
+    const start = new Date(first).getTime();
+    const end = start + TTL_HOURS * 60 * 60 * 1000;
+    return Date.now() > end;
+  }
+  function expiryText() {
+    const first = getFirstOpen();
+    if (!first) return `2 horas a partir del primer acceso`;
+    const end = new Date(new Date(first).getTime() + TTL_HOURS * 60 * 60 * 1000);
+    return `${end.toLocaleString('es-MX', {hour12:false})} (CDMX)`;
+  }
+
+  function guard() {
+    if (!hasValidToken()) {
+      document.body.innerHTML = `
+        <div class="wrap"><div class="card">
+          <h1>Acceso restringido</h1>
+          <p class="muted">Token inválido o ausente. Usa la liga con <code>?t=${TOKEN}</code>.</p>
+        </div></div>`;
+      return false;
+    }
+    if (isExpired()) {
+      document.body.innerHTML = `
+        <div class="wrap"><div class="card">
+          <h1>Acceso vencido</h1>
+          <p class="muted">La demo caducó a las 2 horas del primer acceso. Solicita un nuevo enlace.</p>
+        </div></div>`;
+      return false;
+    }
+    if (!getFirstOpen()) setFirstOpen();
+    document.getElementById('ndaModal').style.display = 'flex';
+    const exp = document.getElementById('expiry');
+    if (exp) exp.textContent = expiryText();
+    return true;
+  }
+
+  // === ANTI-COPIA ===
+  addEventListener('contextmenu', e => e.preventDefault());
+  addEventListener('keydown', e => {
+    const k = e.key.toLowerCase(), ctrl = e.ctrlKey || e.metaKey;
+    if ((ctrl && (k==='c'||k==='x'||k==='v'||k==='a'||k==='s'||k==='u'||k==='i'||k==='j')) || e.keyCode===123) {
+      e.preventDefault(); e.stopPropagation();
+    }
+  }, true);
+  addEventListener('dragstart', e => e.preventDefault());
+  addEventListener('copy', e => e.preventDefault());
+  addEventListener('cut', e => e.preventDefault());
+  addEventListener('selectstart', e => e.preventDefault());
+  (function devtoolsTrap(){
+    const thr = 160;
+    setInterval(() => {
+      if ((outerWidth - innerWidth > thr) || (outerHeight - innerHeight > thr)) {
+        document.body.innerHTML = `
+          <div class="wrap"><div class="card">
+            <h1>Modo restringido</h1>
+            <p class="muted">Cierra las herramientas de desarrollador para continuar.</p>
+          </div></div>`;
+      }
+    }, 1500);
+  })();
+
+  // === NDA ===
+  function checkPass() {
+    const ok = (document.getElementById('pass').value.trim() === PASS);
+    const cb = document.getElementById('ndaok').checked;
+    document.getElementById('enter').disabled = !(ok && cb);
+  }
+  function enterDemo() {
+    document.getElementById('ndaModal').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    const exp = document.getElementById('expiry');
+    if (exp) exp.textContent = expiryText();
+  }
+
+  window.guard = guard;
+  window.checkPass = checkPass;
+  window.enterDemo = enterDemo;
+</script>
+  // === CONFIGURACIÓN ===
+  const TOKEN = "01K2MET1A9KG860CAN9YHF41P4"; // token en la URL ?t=...
+  const PASS  = "0000";                        // contraseña NDA
+  const TTL_HOURS = 2;                         // duración: 2 horas DESDE EL PRIMER ACCESO
+
+  // === GATE PRINCIPAL ===
+  const now = () => new Date();
+  function hasValidToken() {
+    const t = new URL(location.href).searchParams.get('t');
+    return t === TOKEN;
+  }
+
   // Guardamos el primer acceso en el navegador del visitante
   function getFirstOpen() {
     try { return localStorage.getItem('lma_first_open'); } catch { return null; }
