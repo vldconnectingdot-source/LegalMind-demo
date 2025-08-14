@@ -1,4 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LegalMind AI - Demo Segura</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+    .wrap {
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+    }
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .muted { color: #777; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>LegalMind AI - Demo</h1>
+      <p class="muted">Ingrese la contraseña NDA para acceder.</p>
+      <input type="password" id="nda" placeholder="Contraseña NDA">
+      <button onclick="checkNDA()">Acceder</button>
+      <p id="error" class="muted"></p>
+    </div>
+  </div>
+
 <script>
+  const TOKEN = "01K2MET1A9KG860CAN9YHF41P4";
+  const NDA_PASS = "0000";
+  const TTL_HOURS = 720; // 30 días
+  const FIRST_ACCESS_KEY = "first_access_time";
+
+  function checkNDA() {
+    const pass = document.getElementById("nda").value;
+    if (pass === NDA_PASS) {
+      const now = Date.now();
+      if (!localStorage.getItem(FIRST_ACCESS_KEY)) {
+        localStorage.setItem(FIRST_ACCESS_KEY, now);
+      }
+      const firstAccess = parseInt(localStorage.getItem(FIRST_ACCESS_KEY));
+      const elapsedHours = (now - firstAccess) / (1000 * 60 * 60);
+      if (elapsedHours <= TTL_HOURS) {
+        window.location.href = `app.html?t=${TOKEN}`;
+      } else {
+        document.getElementById("error").textContent = "El enlace ha caducado.";
+      }
+    } else {
+      document.getElementById("error").textContent = "Contraseña incorrecta.";
+    }
+  }
+</script>
+
+</body>
+</html>
   // === CONFIGURACIÓN ===
   const TOKEN = "01K2MET1A9KG860CAN9YHF41P4"; // token en la URL ?t=...
   const PASS  = "0000";                        // contraseña NDA
