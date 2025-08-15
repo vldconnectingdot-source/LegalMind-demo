@@ -1,2 +1,73 @@
-='item'; el.textContent="• "+m; grid.appendChild(el); });
-</script>grrr
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LegalMind AI - Demo</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f4f6fa;
+  color: #333;
+}
+header {
+  background-color: #003366;
+  color: white;
+  padding: 20px;
+  text-align: center;
+}
+header img {
+  height: 60px;
+}
+section {
+  padding: 20px;
+  max-width: 900px;
+  margin: auto;
+}
+.card {
+  background: white;
+  padding: 20px;
+  margin: 15px 0;
+  border-radius: 8px;
+  box-shadow: 0px 2px 6px rgba(0,0,0,0.1);
+}
+button {
+  background-color: #ffcc00;
+  color: #003366;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-weight: bold;
+  cursor: pointer;
+}
+button:hover {
+  background-color: #ffdb4d;
+}
+</style>
+</head>
+<body>
+<header>
+  <img src="https://i.ibb.co/pb4rTgQ/legalmind-logo.png" alt="LegalMind AI Logo">
+  <h1>LegalMind AI - Demo Interactiva</h1>
+</header>
+<section>
+  <div class="card">
+    <h2>Consultas Legales con IA</h2>
+    <p>Haz preguntas jurídicas y recibe respuestas inmediatas, respaldadas por jurisprudencia mexicana.</p>
+    <button onclick="alert('Ejemplo de respuesta: Artículo 14 Constitucional...')">Probar módulo</button>
+  </div>
+  <div class="card">
+    <h2>Revisión de Contratos</h2>
+    <p>Sube un contrato y detecta cláusulas de riesgo y áreas de mejora.</p>
+    <button onclick="alert('Ejemplo: Se detectó una cláusula abusiva en el apartado de penalizaciones.')">Probar módulo</button>
+  </div>
+  <div class="card">
+    <h2>Cumplimiento Normativo</h2>
+    <p>Monitorea en tiempo real cambios en leyes y regulaciones aplicables a tu negocio.</p>
+    <button onclick="alert('Ejemplo: Nueva disposición publicada en el DOF el 14/08/2025.')">Probar módulo</button>
+  </div>
+</section>
+</body>
+</html>
